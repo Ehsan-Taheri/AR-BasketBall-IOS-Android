@@ -10,6 +10,7 @@ public class PlaceObjectOnPlane : MonoBehaviour
 
 
 {
+    
     private bool isPlaced = false;
     public GameObject ObjectToPlace;
     public GameObject placementIndicator;
@@ -20,6 +21,8 @@ public class PlaceObjectOnPlane : MonoBehaviour
 
     ARRaycastManager m_RaycastManager;
     static List<ARRaycastHit> s_Hits = new List<ARRaycastHit>();
+    public static event Action HoopPlaced;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -46,6 +49,7 @@ public class PlaceObjectOnPlane : MonoBehaviour
     private void PlaceObject()
     {
         Instantiate(ObjectToPlace, placementPose.position, ObjectToPlace.transform.rotation);
+        HoopPlaced.Invoke();
         isPlaced=true;
         placementIndicator.SetActive(false);
     }
