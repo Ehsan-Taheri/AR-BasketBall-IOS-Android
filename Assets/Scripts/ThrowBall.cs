@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class ThrowBall : MonoBehaviour
@@ -7,6 +8,27 @@ public class ThrowBall : MonoBehaviour
     private Vector2 touchStartPosition;
     private Vector2 touchEndPosition;
     private bool isThrown = false;
+ void OnEnable()
+    {
+        RespawnBall();
+        PlaceObjectOnPlane.HoopPlaced+= EnableBall;
+
+    }
+
+    private void EnableBall()
+    {
+        this.gameObject.SetActive(true);
+    }
+
+    void OnDisable()
+    {
+        PlaceObjectOnPlane.HoopPlaced -= DisableBall;
+    }
+
+    private void DisableBall()
+    {
+        this.gameObject.SetActive(false);
+    }
 
     void Start()
     {

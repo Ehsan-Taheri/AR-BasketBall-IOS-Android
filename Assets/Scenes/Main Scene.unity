@@ -624,6 +624,7 @@ GameObject:
   - component: {fileID: 1007035571}
   - component: {fileID: 1007035573}
   - component: {fileID: 1007035572}
+  - component: {fileID: 1007035574}
   m_Layer: 0
   m_Name: XR Origin
   m_TagString: Untagged
@@ -690,7 +691,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 172f7292e25a949caac9501999fa2d80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Ball: {fileID: 0}
   ObjectToPlace: {fileID: 5961938170808034780, guid: 686bf6dd535344a38b3c433509d4e893, type: 3}
   placementIndicator: {fileID: 1952251873}
 --- !u!114 &1007035573
@@ -706,6 +706,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_RaycastPrefab: {fileID: 0}
+--- !u!114 &1007035574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1007035568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cf5a2707b99a459582b14a274990f3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1605547594
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,6 +793,10 @@ PrefabInstance:
     - target: {fileID: 4373219795664005264, guid: e4e0f44321ed0490192128108ebd8980, type: 3}
       propertyPath: m_Name
       value: Ball
+      objectReference: {fileID: 0}
+    - target: {fileID: 4373219795664005264, guid: e4e0f44321ed0490192128108ebd8980, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4852991840831755910, guid: e4e0f44321ed0490192128108ebd8980, type: 3}
       propertyPath: m_LocalPosition.x

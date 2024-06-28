@@ -28,10 +28,7 @@ public class PlaceObjectOnPlane : MonoBehaviour
     {
         m_RaycastManager = GetComponent<ARRaycastManager>();
     }
-    void Start()
-    {
-
-    }
+    
 
     // Update is called once per frame
     void Update()
