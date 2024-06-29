@@ -10,7 +10,7 @@ public class PlaceObjectOnPlane : MonoBehaviour
 
 
 {
-    
+
     private bool isPlaced = false;
     public GameObject ObjectToPlace;
     public GameObject placementIndicator;
@@ -28,7 +28,7 @@ public class PlaceObjectOnPlane : MonoBehaviour
     {
         m_RaycastManager = GetComponent<ARRaycastManager>();
     }
-    
+
 
     // Update is called once per frame
     void Update()
@@ -47,7 +47,7 @@ public class PlaceObjectOnPlane : MonoBehaviour
     {
         Instantiate(ObjectToPlace, placementPose.position, ObjectToPlace.transform.rotation);
         HoopPlaced.Invoke();
-        isPlaced=true;
+        isPlaced = true;
         placementIndicator.SetActive(false);
     }
 
@@ -58,6 +58,7 @@ public class PlaceObjectOnPlane : MonoBehaviour
             placementPoseIsValid = s_Hits.Count > 0;
         if (placementPoseIsValid)
             placementPose = s_Hits[0].pose;
+            print(s_Hits[0].trackableId);
         placedPlaneId = s_Hits[0].trackableId;
         var planeManager = GetComponent<ARPlaneManager>();
         ARPlane arPlane = planeManager.GetPlane(placedPlaneId);

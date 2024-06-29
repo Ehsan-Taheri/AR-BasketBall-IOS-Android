@@ -149,4 +149,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fac77b82fbc5c49af9672479e21dbd52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FeatheringWidth: 0.2
+  m_FeatheringWidth: 0.4

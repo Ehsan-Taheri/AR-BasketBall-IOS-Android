@@ -1,18 +1,26 @@
-using System;
 using UnityEngine;
 
 public class ThrowBall : MonoBehaviour
 {
     public Rigidbody ballRigidbody;
-    public float throwForceMultiplier = 10f;
+    public Transform BallPlace;
+    public float throwForceMultiplier = 0.1f; // Adjust this as necessary
     private Vector2 touchStartPosition;
     private Vector2 touchEndPosition;
     private bool isThrown = false;
- void OnEnable()
+
+    public float timeInterval = 4;
+    private float timeCounter = 0;
+    private bool shouldDrawLine = false;
+    private Vector3 startLineWorldPosition;
+    private Vector3 endLineWorldPosition;
+
+    private Transform originalParent;
+
+    void OnEnable()
     {
         RespawnBall();
-        PlaceObjectOnPlane.HoopPlaced+= EnableBall;
-
+        PlaceObjectOnPlane.HoopPlaced += EnableBall;
     }
 
     private void EnableBall()
@@ -32,16 +40,16 @@ public class ThrowBall : MonoBehaviour
 
     void Start()
     {
-        // Ensure the ball starts at the bottom center of the screen
         RespawnBall();
+        originalParent = transform.parent;
     }
 
     void Update()
     {
         if (isThrown)
         {
-            // Check if the ball is almost stopped
-            if (ballRigidbody.velocity.magnitude < 0.1f)
+            timeCounter += Time.deltaTime;
+            if (ballRigidbody.velocity.magnitude < 0.1f || timeCounter >= timeInterval)
             {
                 RespawnBall();
                 isThrown = false;
@@ -49,11 +57,16 @@ public class ThrowBall : MonoBehaviour
         }
         else
         {
-            HandleTouchInput();
+            HandleInput();
+        }
+
+        if (shouldDrawLine)
+        {
+            Debug.DrawLine(startLineWorldPosition, endLineWorldPosition, Color.red);
         }
     }
 
-    void HandleTouchInput()
+    void HandleInput()
     {
         if (Input.touchCount > 0)
         {
@@ -62,35 +75,77 @@ public class ThrowBall : MonoBehaviour
             if (touch.phase == TouchPhase.Began)
             {
                 touchStartPosition = touch.position;
+                shouldDrawLine = false;
             }
             else if (touch.phase == TouchPhase.Ended)
             {
                 touchEndPosition = touch.position;
-
-                Vector2 direction = touchEndPosition - touchStartPosition;
-                float magnitude = direction.magnitude;
-
-                ThrowBallInDirection(direction.normalized, magnitude);
-                isThrown = true;
+                ProcessThrow();
             }
         }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            touchStartPosition = Input.mousePosition;
+            shouldDrawLine = false;
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            touchEndPosition = Input.mousePosition;
+            ProcessThrow();
+        }
+    }
+
+    void ProcessThrow()
+    {
+        Vector2 direction = touchEndPosition - touchStartPosition;
+        float magnitude = direction.magnitude;
+
+        Debug.Log("Direction: " + direction + " Magnitude: " + magnitude);
+
+        ThrowBallInDirection(direction, magnitude);
+        isThrown = true;
+
+        Vector3 startScreenPosition = new Vector3(touchStartPosition.x, touchStartPosition.y, Camera.main.nearClipPlane + 1f); // Adjust depth as needed
+        Vector3 endScreenPosition = new Vector3(touchEndPosition.x, touchEndPosition.y, Camera.main.nearClipPlane + 1f);
+        startLineWorldPosition = Camera.main.ScreenToWorldPoint(startScreenPosition);
+        endLineWorldPosition = Camera.main.ScreenToWorldPoint(endScreenPosition);
+        shouldDrawLine = true;
+
+        Debug.Log("Start Line Position: " + startLineWorldPosition + " End Line Position: " + endLineWorldPosition);
     }
 
     void ThrowBallInDirection(Vector2 direction, float magnitude)
     {
-        Vector3 force = new Vector3(direction.x, direction.y, 0) * magnitude * throwForceMultiplier;
-        ballRigidbody.isKinematic = false; // Enable physics
+        // Detach from parent (AR camera) before throwing
+        transform.SetParent(null);
+
+        // Normalize the screen direction vector and create a 3D direction vector
+        Vector3 screenDirection = new Vector3(direction.x, direction.y, 0).normalized;
+
+        // Get the direction relative to the camera's forward vector
+        Vector3 worldDirection = Camera.main.transform.TransformDirection(screenDirection);
+        worldDirection.z = 1; // Ensure the ball is thrown forward in the z-axis
+
+        Vector3 force = worldDirection * (magnitude / 100f) * throwForceMultiplier;
+
+        ballRigidbody.isKinematic = false;
+        ballRigidbody.useGravity = true;
         ballRigidbody.AddForce(force, ForceMode.Impulse);
+        Debug.Log("Force applied: " + force);
     }
 
     void RespawnBall()
     {
+        timeCounter = 0;
         ballRigidbody.velocity = Vector3.zero;
         ballRigidbody.angularVelocity = Vector3.zero;
-        ballRigidbody.isKinematic = true; // Disable physics
+        ballRigidbody.useGravity = false;
+        ballRigidbody.isKinematic = true;
 
-        Vector3 screenBottomCenter = new Vector3(Screen.width / 2, 0, Camera.main.nearClipPlane + 1);
-        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(screenBottomCenter);
-        transform.position = new Vector3(worldPosition.x, worldPosition.y, 0);
+        // Reattach to the original parent (AR camera) when respawning
+        transform.SetParent(originalParent);
+
+        transform.position = BallPlace.position;
+        Debug.Log("Ball respawned at: " + BallPlace.position);
     }
 }
