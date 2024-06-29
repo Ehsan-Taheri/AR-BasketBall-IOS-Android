@@ -4,12 +4,13 @@ public class ThrowBall : MonoBehaviour
 {
     public Rigidbody ballRigidbody;
     public Transform BallPlace;
+    public GameObject trailEffect;
     public float throwForceMultiplier = 0.1f; // Adjust this as necessary
     private Vector2 touchStartPosition;
     private Vector2 touchEndPosition;
     private bool isThrown = false;
 
-    public float timeInterval = 4;
+    public float timeInterval = 2;
     private float timeCounter = 0;
     private bool shouldDrawLine = false;
     private Vector3 startLineWorldPosition;
@@ -17,28 +18,10 @@ public class ThrowBall : MonoBehaviour
 
     private Transform originalParent;
 
+
+
     void OnEnable()
-    {
-        RespawnBall();
-        PlaceObjectOnPlane.HoopPlaced += EnableBall;
-    }
 
-    private void EnableBall()
-    {
-        this.gameObject.SetActive(true);
-    }
-
-    void OnDisable()
-    {
-        PlaceObjectOnPlane.HoopPlaced -= DisableBall;
-    }
-
-    private void DisableBall()
-    {
-        this.gameObject.SetActive(false);
-    }
-
-    void Start()
     {
         RespawnBall();
         originalParent = transform.parent;
@@ -116,6 +99,7 @@ public class ThrowBall : MonoBehaviour
 
     void ThrowBallInDirection(Vector2 direction, float magnitude)
     {
+        trailEffect.SetActive(true);
         // Detach from parent (AR camera) before throwing
         transform.SetParent(null);
 
@@ -141,7 +125,7 @@ public class ThrowBall : MonoBehaviour
         ballRigidbody.angularVelocity = Vector3.zero;
         ballRigidbody.useGravity = false;
         ballRigidbody.isKinematic = true;
-
+        trailEffect.SetActive(false);
         // Reattach to the original parent (AR camera) when respawning
         transform.SetParent(originalParent);
 
